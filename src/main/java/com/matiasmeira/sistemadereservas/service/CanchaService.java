@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.matiasmeira.sistemadereservas.dto.CanchaDTO;
 import com.matiasmeira.sistemadereservas.model.Cancha;
-import com.matiasmeira.sistemadereservas.model.Usuario;
+import com.matiasmeira.sistemadereservas.model.Establecimiento;
 import com.matiasmeira.sistemadereservas.repository.CanchaRepository;
-import com.matiasmeira.sistemadereservas.repository.UsuarioRepository;
+import com.matiasmeira.sistemadereservas.repository.EstablecimientoRepository;
 
 @Service
 public class CanchaService {
@@ -18,10 +18,10 @@ public class CanchaService {
     private CanchaRepository canchaRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private EstablecimientoRepository establecimientoRepository;
 
-    public CanchaDTO.Salida guardar(CanchaDTO.Entrada cancha, Long usuarioId){
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+    public CanchaDTO.Salida guardar(CanchaDTO.Entrada cancha, Long establecimientoId){
+        Establecimiento establecimiento = establecimientoRepository.findById(establecimientoId).orElseThrow(() -> new RuntimeException("Establecimiento no encontrado"));
         Cancha nuevaCancha = new Cancha();
         nuevaCancha.setNombre(cancha.getNombre());
         nuevaCancha.setUbicacion(cancha.getUbicacion());
@@ -29,9 +29,7 @@ public class CanchaService {
         nuevaCancha.setPrecioHora(cancha.getPrecioHora());
         nuevaCancha.setEstado("Disponible");
         nuevaCancha.setDescripcion(cancha.getDescripcion());
-        nuevaCancha.setHoraApertura(cancha.getHoraApertura());
-        nuevaCancha.setHoraCierre(cancha.getHoraCierre());
-        nuevaCancha.setUsuario(usuario);
+        nuevaCancha.setEstablecimiento(establecimiento);
         return MapToDTO(canchaRepository.save(nuevaCancha));
     }
 
@@ -64,9 +62,7 @@ public class CanchaService {
         salida.setEstado(cancha.getEstado());
         salida.setUbicacion(cancha.getUbicacion());
         salida.setDescripcion(cancha.getDescripcion());
-        salida.setHoraApertura(cancha.getHoraApertura());
-        salida.setHoraCierre(cancha.getHoraCierre());
-        salida.setUsuarioId(cancha.getUsuario().getId());
+        salida.setEstablecimientoId(cancha.getEstablecimiento().getId());
         return salida;
     }
 }
