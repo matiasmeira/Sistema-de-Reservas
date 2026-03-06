@@ -1,5 +1,6 @@
 package com.matiasmeira.sistemadereservas.dto;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +19,8 @@ public class CanchaDTO {
         private double precioHora;
         private String ubicacion;
         private String descripcion;
+        private LocalTime horaApertura;
+        private LocalTime horaCierre;
         private Long usuarioId;
     }
 
@@ -31,7 +34,9 @@ public class CanchaDTO {
         private String estado;
         private String ubicacion;
         private String descripcion;
-        private String nombreUsuario;
+        private LocalTime horaApertura;
+        private LocalTime horaCierre;
+        private Long usuarioId;
         private List <ReservaDTO.Salida> reservas;
     }
     

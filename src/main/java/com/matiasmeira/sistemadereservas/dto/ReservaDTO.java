@@ -1,6 +1,7 @@
 package com.matiasmeira.sistemadereservas.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class ReservaDTO {
         private int duracionMinutos;
         private String estado;
         private double precioTotal;
+        private LocalDateTime fechaCreacion;
         private String nombreUsuario;
         private String nombreCancha;
     }

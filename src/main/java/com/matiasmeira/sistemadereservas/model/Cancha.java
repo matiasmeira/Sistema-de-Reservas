@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -34,6 +36,9 @@ public class Cancha {
     private String estado;
     private String ubicacion;
     private String descripcion;
+
+    private LocalTime horaApertura;
+    private LocalTime horaCierre;
     
     @ManyToOne
     @JoinColumn(name = "usuario_id")
