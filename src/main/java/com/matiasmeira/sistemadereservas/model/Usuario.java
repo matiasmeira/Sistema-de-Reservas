@@ -37,6 +37,6 @@ public class Usuario {
     private List<Reserva> reservas;
 
     @OneToMany(mappedBy = "usuario")
-    private List<Cancha> canchas;
+    private List<Establecimiento> establecimientos;
 
 }
