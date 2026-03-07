@@ -11,7 +11,7 @@ public class UsuarioDTO {
     @AllArgsConstructor @NoArgsConstructor
     public static class Entrada{
         private String email;
-        private String contraseña;
+        private String password;
         private String rol;
         private String nombre;
         private String telefono;
@@ -22,7 +22,7 @@ public class UsuarioDTO {
     public static class Salida {
         private Long id;
         private String email;
-        private String contraseña;
+        private String password;
         private String rol;
         private String nombre;
         private String telefono;
