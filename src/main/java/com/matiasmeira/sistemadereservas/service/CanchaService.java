@@ -53,6 +53,16 @@ public class CanchaService {
         canchaRepository.deleteById(id);
     }
 
+    public CanchaDTO.Salida actualizar(Long id, CanchaDTO.Entrada cancha) {
+        Cancha canchaExistente = canchaRepository.findById(id).orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+        canchaExistente.setNombre(cancha.getNombre());
+        canchaExistente.setUbicacion(cancha.getUbicacion());
+        canchaExistente.setTipo(cancha.getTipo());
+        canchaExistente.setPrecioHora(cancha.getPrecioHora());
+        canchaExistente.setDescripcion(cancha.getDescripcion());
+        return MapToDTO(canchaRepository.save(canchaExistente));
+    }
+
     private CanchaDTO.Salida MapToDTO(Cancha cancha) {
         CanchaDTO.Salida salida = new CanchaDTO.Salida();
         salida.setId(cancha.getId());
