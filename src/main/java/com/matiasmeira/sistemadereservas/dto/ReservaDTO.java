@@ -15,7 +15,6 @@ public class ReservaDTO {
     @Data @Getter @Setter
     @AllArgsConstructor @NoArgsConstructor
     public static class Entrada {
-        private long usuarioId;
         private long canchaId; 
         private LocalDate fechaReserva;
         private LocalTime horaInicio;

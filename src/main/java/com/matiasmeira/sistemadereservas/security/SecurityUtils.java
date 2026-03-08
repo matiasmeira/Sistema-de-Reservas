@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.matiasmeira.sistemadereservas.repository.CanchaRepository;
 import com.matiasmeira.sistemadereservas.repository.EstablecimientoRepository;
+import com.matiasmeira.sistemadereservas.repository.ReservaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +16,8 @@ public class SecurityUtils {
     private final EstablecimientoRepository establecimientoRepository;
 
     private final CanchaRepository canchaRepository;
+
+    private final ReservaRepository reservaRepository;
 
     public boolean esDueñoOAdminEstablecimiento(Long establecimientoId, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -50,5 +53,23 @@ public class SecurityUtils {
         return canchaRepository.findById(canchaId)
                 .map(cancha -> cancha.getEstablecimiento().getUsuario().getEmail().equals(emailLogueado))
                 .orElse(false);
+    }
+
+    public boolean tieneAccesoALaReserva(Long reservaId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) return false;
+
+        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return true;
+        }
+
+        String emailLogueado = authentication.getName();
+
+        return reservaRepository.findById(reservaId).map(reserva -> {
+            boolean esElCliente = reserva.getUsuario().getEmail().equals(emailLogueado);
+
+            boolean esElDueño = reserva.getCancha().getEstablecimiento().getUsuario().getEmail().equals(emailLogueado);
+
+            return esElCliente || esElDueño;
+        }).orElse(false); 
     }
 }
