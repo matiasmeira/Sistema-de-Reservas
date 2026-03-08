@@ -52,6 +52,19 @@ public class EstablecimientoService {
         return establecimientosDTO;
     }
 
+    public EstablecimientoDTO.Salida actualizar(Long id, EstablecimientoDTO.Entrada dto) {
+        Establecimiento existente = establecimientoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Establecimiento no encontrado con ID: " + id));
+
+        existente.setNombre(dto.getNombre());
+        existente.setDireccion(dto.getDireccion());
+        existente.setTelefono(dto.getTelefono());
+        existente.setHoraApertura(dto.getHoraApertura());
+        existente.setHoraCierre(dto.getHoraCierre());
+
+        return MapToDTO(establecimientoRepository.save(existente));
+    }
+
     private EstablecimientoDTO.Salida MapToDTO(Establecimiento establecimiento) {
         EstablecimientoDTO.Salida salida = new EstablecimientoDTO.Salida();
         salida.setId(establecimiento.getId());
