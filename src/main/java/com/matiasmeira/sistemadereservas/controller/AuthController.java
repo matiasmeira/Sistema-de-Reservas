@@ -2,7 +2,6 @@ package com.matiasmeira.sistemadereservas.controller;
 
 import com.matiasmeira.sistemadereservas.dto.AuthDTO;
 import com.matiasmeira.sistemadereservas.dto.UsuarioDTO;
-import com.matiasmeira.sistemadereservas.model.Usuario;
 import com.matiasmeira.sistemadereservas.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

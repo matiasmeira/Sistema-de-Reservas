@@ -53,9 +53,7 @@ public class EstablecimientoService {
     }
 
     public EstablecimientoDTO.Salida actualizar(Long id, EstablecimientoDTO.Entrada dto) {
-        Establecimiento existente = establecimientoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Establecimiento no encontrado con ID: " + id));
-
+        Establecimiento existente = establecimientoRepository.findById(id).orElseThrow(() -> new RuntimeException("Establecimiento no encontrado con ID: " + id));
         existente.setNombre(dto.getNombre());
         existente.setDireccion(dto.getDireccion());
         existente.setTelefono(dto.getTelefono());

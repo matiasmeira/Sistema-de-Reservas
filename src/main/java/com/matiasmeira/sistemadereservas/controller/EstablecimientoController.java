@@ -43,7 +43,7 @@ public class EstablecimientoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@securityUtils.esDueñoOAdmin(#id, authentication)")
+    @PreAuthorize("@securityUtils.esDueñoOAdminEstablecimiento(#id, authentication)")
     public ResponseEntity<EstablecimientoDTO.Salida> actualizar(
             @PathVariable Long id, 
             @RequestBody EstablecimientoDTO.Entrada establecimiento) {
@@ -51,7 +51,7 @@ public class EstablecimientoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@securityUtils.esDueñoOAdmin(#id, authentication)")
+    @PreAuthorize("@securityUtils.esDueñoOAdminEstablecimiento(#id, authentication)")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         establecimientoService.eliminar(id);
         return ResponseEntity.noContent().build();
