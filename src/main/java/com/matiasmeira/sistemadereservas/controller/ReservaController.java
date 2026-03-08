@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -26,19 +29,27 @@ public class ReservaController {
     private ReservaService reservaService;
 
     @PostMapping
-    public ResponseEntity<ReservaDTO.Salida> crear(@RequestBody ReservaDTO.Entrada reserva, @RequestParam Long canchaId, @RequestParam Long usuarioId){
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.guardar(reserva, canchaId, usuarioId));
+    @PreAuthorize("hasAnyRole('USER', 'OWNER', 'ADMIN')")
+    public ResponseEntity<ReservaDTO.Salida> crear(@RequestBody ReservaDTO.Entrada reserva, Authentication authentication){
+        String emailUsuario = authentication.getName();
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.guardar(reserva, emailUsuario));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@RequestParam Long id){
+    @PreAuthorize("@securityUtils.tieneAccesoALaReserva(#id, authentication)")    public ResponseEntity<Void> eliminar(@RequestParam Long id){
         reservaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservaDTO.Salida>> obtenerTodas(){
-        return ResponseEntity.ok(reservaService.obtenerTodas());
+    @GetMapping("/{id}")
+    @PreAuthorize("@securityUtils.tieneAccesoALaReserva(#id, authentication)")    public ResponseEntity<ReservaDTO.Salida> obtenerPorId(@PathVariable Long id){
+        return ResponseEntity.ok(reservaService.obtenerPorId(id));
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<List<ReservaDTO.Salida>> obtenerMisReservas(Authentication authentication){
+        String emailUsuario = authentication.getName();
+        return ResponseEntity.ok(reservaService.obtenerMisReservas(emailUsuario));
+    }
 }

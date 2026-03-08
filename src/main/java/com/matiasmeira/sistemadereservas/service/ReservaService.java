@@ -1,5 +1,6 @@
 package com.matiasmeira.sistemadereservas.service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,19 +26,38 @@ public class ReservaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public ReservaDTO.Salida guardar(ReservaDTO.Entrada reserva, Long canchaId, Long usuarioId){
-        Cancha cancha = canchaRepository.findById(canchaId).orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));   
+    public ReservaDTO.Salida guardar(ReservaDTO.Entrada reserva, String emailUsuario) {
+        
+        Cancha cancha = canchaRepository.findById(reserva.getCanchaId()).orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+                
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));   
+        
+        LocalTime horaFinCalculada = reserva.getHoraInicio().plusMinutes(reserva.getDuracionMinutos());
+
+        boolean ocupada = reservaRepository.existeSolapamiento(
+                cancha.getId(),
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                horaFinCalculada
+        );
+
+        if (ocupada) {
+            throw new RuntimeException("La cancha ya se encuentra reservada en ese horario.");
+        }
+
         Reserva nuevaReserva = new Reserva();
         nuevaReserva.setFechaReserva(reserva.getFechaReserva());
         nuevaReserva.setHoraInicio(reserva.getHoraInicio());
         nuevaReserva.setDuracionMinutos(reserva.getDuracionMinutos()); 
-        nuevaReserva.setHoraFin(reserva.getHoraInicio().plusMinutes(reserva.getDuracionMinutos()));
-        nuevaReserva.setPrecioTotal(reserva.getDuracionMinutos() * cancha.getPrecioHora() / 60);
+        nuevaReserva.setHoraFin(horaFinCalculada);
+        
+        nuevaReserva.setPrecioTotal((reserva.getDuracionMinutos() * cancha.getPrecioHora()) / 60.0);
+        
         nuevaReserva.setEstado("Reservada");
         nuevaReserva.setCancha(cancha);
         nuevaReserva.setUsuario(usuario);
-        return MapToDTO(reservaRepository.save(nuevaReserva));
+        
+        return MapToDTO(reservaRepository.saveAndFlush(nuevaReserva));
     }
 
     public ReservaDTO.Salida obtenerPorId(Long id){
@@ -51,12 +71,28 @@ public class ReservaService {
         reservaRepository.deleteById(id);
     }
 
-    public List<ReservaDTO.Salida> obtenerTodas(){
+    public List<ReservaDTO.Salida> obtenerMisReservas(String emailUsuario) {
+        
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Reserva> reservas;
+
+        if (usuario.getRol().equals("ROLE_ADMIN")) {
+            reservas = reservaRepository.findAll();
+            
+        } else if (usuario.getRol().equals("ROLE_OWNER")) {
+            reservas = reservaRepository.findByEstablecimientoDueñoEmail(emailUsuario);
+            
+        } else { 
+            reservas = reservaRepository.findByUsuarioEmail(emailUsuario);
+        }
+
         List<ReservaDTO.Salida> reservasDTO = new ArrayList<>();
-        List<Reserva> reservas = reservaRepository.findAll();
         for (Reserva reserva : reservas) {
             reservasDTO.add(MapToDTO(reserva));
         }
+        
         return reservasDTO;
     }
 
